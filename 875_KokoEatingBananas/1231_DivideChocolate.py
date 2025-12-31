@@ -32,31 +32,31 @@
 
 class Solution:
     def maximizeSweetness(self, sweetness: List[int], k: int) -> int:
-        l, r = min(sweetness), sum(sweetness)
+        l, r = min(sweetness), sum(sweetness) // (k+1)
         while l < r:
-            mid = (l + r) // 2
+            # !!!!!! Q: why need extra 1? Ans: because consider the case where left is already at the maximum workable value and right is the minimum unworkable value, 
+            # We are only one step away from finishing the binary search. If we use mid = (left + right) / 2, we will get stuck in an infinite loop, as mid = left
+            # acording to the rule for how we reduce the search space, l = mid, then [mid, right] = [left, right], which is the same as previous search space. 
+            # However, using mid = (left + right + 1) / 2, since new mid is not workable, we will create new search space that [left, mid-1] = [left, right - 1] = [left, left], which can stop the loop.
+            mid = (l + r + 1) // 2
             # inclusively
             if self.canCut(sweetness, mid, k):
-                r = mid
+                l = mid
             # exclusively
             else:
-                l = mid + 1
+                # !!!! Q: why need less 1? Ans: this mid is not workable, so we need to exclude it.
+                r = mid - 1
         return l
     
-    def canCut(self, sweetness: List[int], minSweet: int, k: int) -> bool:
-        print("new round")
-        s, cuts = 0, 0
+    def canCut(self, sweetness: List[int], maxMinSweet: int, k: int) -> bool:
+        # print("new round")
+        s, ppl = 0, 0
         minExist = False
         for sw in sweetness:
             s += sw
-            if s == minSweet:
-                print("Found minSweet", s, minSweet, cuts)
-                cuts += 1
+            if s >= maxMinSweet:
+                ppl += 1
                 s = 0
-                minExist = True
-            elif s > minSweet:
-                print("Found greater than minSweet", s, minSweet, cuts)
-                cuts += 1
-                s = 0
-        print("cuts", cuts, "minExist", minExist, "canCut", cuts >= k and minExist)
-        return cuts >= k and minExist
+        # print("cuts", cuts, "minExist", minExist, "canCut:", cuts >= k and minExist)
+        # return cuts >= k and minExist
+        return ppl >= k+1
