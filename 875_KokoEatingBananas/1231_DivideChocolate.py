@@ -48,6 +48,7 @@ class Solution:
                 r = mid - 1
         return l
     
+    # check if the given maxMinSweet is workable to have at least k+1 pieces of sweetness >= maxMinSweet
     def canCut(self, sweetness: List[int], maxMinSweet: int, k: int) -> bool:
         # print("new round")
         s, ppl = 0, 0
