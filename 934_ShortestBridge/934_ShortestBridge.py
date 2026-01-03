@@ -55,6 +55,7 @@ class Solution:
             while stack:
                 r, c = stack.pop()
                 for nr, nc in [(r+1, c), (r-1, c), (r, c+1), (r, c-1)]:
+                    # push all neighbors to stack if they are land
                     if 0 <= nr < n and 0 <= nc < n and grid[nr][nc] == 1:
                         grid[nr][nc] = 2
                         island.append((nr, nc))
