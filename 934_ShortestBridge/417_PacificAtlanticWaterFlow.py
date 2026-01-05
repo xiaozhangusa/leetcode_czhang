@@ -54,11 +54,11 @@ class Solution:
         atlantic = set()
         m, n = len(heights), len(heights[0])
         for i in range(m):
-            for j in range(n):
-                if i == 0 or j == 0:
-                    pacific.add((i, j))
-                if i == m-1 or j == n-1:
-                    atlantic.add((i, j))
+            pacific.add((i, 0))
+            atlantic.add((i, n-1))
+        for j in range(n):
+            pacific.add((0, j))
+            atlantic.add((m-1, j))
         # bfs to find all pieces of land connected to the pacific ocean
         def bfs(q):
             visited = set()
@@ -68,12 +68,12 @@ class Solution:
                     r, c = q.popleft()
                     reachable.add((r, c))
                     for nr, nc in [(r+1, c), (r-1, c), (r, c+1), (r, c-1)]:
-                        if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in reachable and heights[nr][nc] > heights[r][c]:
+                        if 0 <= nr < m and 0 <= nc < n and (nr, nc) not in reachable and heights[nr][nc] >= heights[r][c]:
                             q.append((nr, nc))
-                            # reachable.add((nr, nc))
             return reachable
         
         # bfs to find all pieces of land connected to the atlantic ocean
         p_reachable = bfs(deque(pacific))
         a_reachable = bfs(deque(atlantic))
         return list(p_reachable & a_reachable)
+
