@@ -35,26 +35,28 @@ class Solution:
         if not isWater or not isWater[0]:
             return []
         m, n = len(isWater), len(isWater[0])
+        # height matrix initialized to 0
+        ht = [[0] * n for _ in range(m)]
+        print("ht: ", ht)
         # find all water cells and add them to the queue
         q = deque()
         for i in range(m):
             for j in range(n):
                 if isWater[i][j] == 1:
                     q.append((i, j))
-        maxH, h = -1, -1
         dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        h = -1
         while q:
             h += 1
-            maxH = max(maxH, h)
             for _ in range(len(q)):
                 r, c = q.popleft()
+                ht[r][c] = h
                 for d in dirs:
                     nr, nc = r + d[0], c + d[1]
                     if 0 <= nr < m and 0 <= nc < n and isWater[nr][nc] == 0:
                         isWater[nr][nc] = 1
                         q.append((nr, nc))
-        return maxH
-
+        return ht
 
         
         
