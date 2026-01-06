@@ -46,6 +46,8 @@ class Solution:
                     total += 1
                 if grid[i][j] == 2:
                     q.append((i, j))
+        if total == 0:
+            return 0
         mins = -1
         while q:
             # print ("____________")
