@@ -42,14 +42,30 @@ class Solution:
     def findMaximalUncoveredRanges(self, n: int, ranges: List[List[int]]) -> List[List[int]]:
         l = len(ranges)
         if l == 0:
-            return [[0, n-1]]
-        sorted_ranges = sorted(ranges, key=lambda x: x[0])
+            return [[0, n - 1]]
+        # To sort by multiple criteria in Python (like first value, then second value), 
+        # we can rely on Python's default sorting behavior or be explicit with a lambda
+        sorted_ranges = sorted(ranges, key=lambda x: (x[0], x[1]))
         res = []
-        if sorted_ranges[0][0] > 0:
-            res.append([0, sorted_ranges[0][0]-1])
-        for i in range(1, l):
-            if sorted_ranges[i][1] > sorted_ranges[i-1][1]:
-                res.append([sorted_ranges[i-1][1]+1, sorted_ranges[i][1]-1])
-        if sorted_ranges[-1][1] < n - 1:
-            res.append([sorted_ranges[-1][1]+1, n-1])
+        # if sorted_ranges[0][0] > 0:
+        #     res.append([0, sorted_ranges[0][0] - 1])
+        # for i in range(1, l):
+        #     if sorted_ranges[i][0] > sorted_ranges[i - 1][1]:
+        #         print("ranges: ", sorted_ranges[i - 1], sorted_ranges[i])
+        #         print("add: ", [sorted_ranges[i - 1][1] + 1, sorted_ranges[i][0] - 1])
+        #         b1, b2 = sorted_ranges[i - 1][1] + 1, sorted_ranges[i][0] - 1
+        #         if b2 >= b1:
+        #             res.append([b1, b2])
+        far = -1
+        for s, e in sorted_ranges:
+            # there is a gap
+            if s > far and far + 1 <= s - 1:
+                print("gap found: ", far + 1, s - 1)
+                res.append([far + 1, s - 1])
+            # always update far
+            far = max(far, e)
+            print("far: ", far)
+        # if sorted_ranges[-1][1] < n - 1:
+        if far < n - 1:
+            res.append([far + 1, n - 1])
         return res
