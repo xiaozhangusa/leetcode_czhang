@@ -33,9 +33,9 @@
 class Solution:
     def findMissingRanges(self, nums: List[int], lower: int, upper: int) -> List[List[int]]:
         res = []
-        if not nums:
-            return []
         l = len(nums)
+        if l == 0:
+            return [[lower, upper]]
         if nums[0] > lower:
             res.append([lower, nums[0]-1])
         for i in range(1, l):
