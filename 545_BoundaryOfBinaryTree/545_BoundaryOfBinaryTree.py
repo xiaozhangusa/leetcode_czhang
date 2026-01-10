@@ -57,40 +57,46 @@ class Solution:
     def boundaryOfBinaryTree(self, root: Optional[TreeNode]) -> List[int]:
         if not root:
             return []
-        return self.leftBoundary(root) + self.leaves(root) + self.rightBoundary(root)
-    
+        return [root.val] + self.leftBoundary(root.left) + self.leaves(root) + self.rightBoundary(root.right)
+
     def leftBoundary(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
         if not root.left and not root.right:
             return []
         res = []
         while root:
-            res.append(root.val)
             # if root is a leaf, break
             if not root.left and not root.right:
                 break
+            res.append(root.val)
             # pursue left child if possible, otherwise pursue right child
             if root.left:
                 root = root.left
             # if left child is not possible, pursue right child
             elif root.right:
                 root = root.right
+        print("leftBoundary: ", res)
         return res
 
     def rightBoundary(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
+        # if root is a leaf, break
         if not root.left and not root.right:
             return []
         res = []
         while root:
-            # res.append(root.val)
-            res += [root.val]
-            # if root is a leaf, break
             if not root.left and not root.right:
                 break
+            # res.append(root.val)
+            res = [root.val] + res
             # pursue right child if possible, otherwise pursue left child
             if root.right:
                 root = root.right
             elif root.left:
                 root = root.left
+        print("rightBoundary: ", res)
         return res
 
     def leaves(self, root: Optional[TreeNode]) -> List[int]:
@@ -108,4 +114,6 @@ class Solution:
                 q.append(node.left)
             if node.right:
                 q.append(node.right)
+        print("leaves: ", res)
         return res
+
