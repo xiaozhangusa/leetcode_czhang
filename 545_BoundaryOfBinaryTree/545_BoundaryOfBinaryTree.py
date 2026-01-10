@@ -65,6 +65,9 @@ class Solution:
         res = []
         while root:
             res.append(root.val)
+            # if root is a leaf, break
+            if not root.left and not root.right:
+                break
             # pursue left child if possible, otherwise pursue right child
             if root.left:
                 root = root.left
@@ -72,19 +75,24 @@ class Solution:
             elif root.right:
                 root = root.right
         return res
-    
+
     def rightBoundary(self, root: Optional[TreeNode]) -> List[int]:
         if not root.left and not root.right:
             return []
         res = []
         while root:
-            res.append(root.val)
+            # res.append(root.val)
+            res += [root.val]
+            # if root is a leaf, break
+            if not root.left and not root.right:
+                break
+            # pursue right child if possible, otherwise pursue left child
             if root.right:
                 root = root.right
             elif root.left:
                 root = root.left
         return res
-    
+
     def leaves(self, root: Optional[TreeNode]) -> List[int]:
         # if root is a leaf, return [root.val]
         if not root.left and not root.right:
@@ -101,4 +109,3 @@ class Solution:
             if node.right:
                 q.append(node.right)
         return res
-        
