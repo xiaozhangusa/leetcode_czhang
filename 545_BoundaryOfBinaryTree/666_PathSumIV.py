@@ -49,6 +49,8 @@ class Solution:
             parent = math.ceil(pos / 2)
             if parent in tree[depth-1]:
                 tree[depth][pos] = val + tree[depth-1][parent]
+            else:
+                tree[depth][pos] = val
         print(tree)
         pathSum = 0
         for depth in tree:
