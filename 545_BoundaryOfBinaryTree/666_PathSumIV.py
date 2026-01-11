@@ -60,7 +60,7 @@ class Solution:
         pathSum = 0
         for depth in tree:
             for pos in tree[depth]:
-                if depth+1 not in tree or (tree[depth+1].get(pos*2) is None and tree[depth+1].get(pos*2+1) is None):
+                if depth+1 not in tree or (tree[depth+1].get(pos*2-1) is None and tree[depth+1].get(pos*2) is None):
                     print("leaf: ", depth, pos, tree[depth][pos])
                     pathSum += tree[depth][pos]
         return pathSum
