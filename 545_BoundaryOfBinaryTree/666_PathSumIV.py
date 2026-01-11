@@ -40,14 +40,19 @@ class Solution:
         # build tree
         tree = defaultdict(dict)
         for num in nums:
+            print("---------------")
             depth = num // 100
+            print("current depth: ", depth)
             pos = (num // 10) % 10
             val = num % 10
             if depth not in tree:
+                print("depth: ", depth)
                 tree[depth] = {}
+            print("current tree: ", tree)
             # pos // 2 is the parent of pos.
             parent = math.ceil(pos / 2)
-            if parent in tree[depth-1]:
+            print("parent: ", parent)
+            if (depth -1) in tree and parent in tree[depth-1]:
                 tree[depth][pos] = val + tree[depth-1][parent]
             else:
                 tree[depth][pos] = val
@@ -56,5 +61,6 @@ class Solution:
         for depth in tree:
             for pos in tree[depth]:
                 if depth+1 not in tree or (tree[depth+1].get(pos*2) is None and tree[depth+1].get(pos*2+1) is None):
+                    print("leaf: ", depth, pos, tree[depth][pos])
                     pathSum += tree[depth][pos]
         return pathSum
