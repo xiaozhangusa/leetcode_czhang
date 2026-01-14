@@ -27,8 +27,11 @@
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
         lo, hi = 1, len(s) + 1
-        while lo < hi:
-            mid = (lo + hi) // 2
+        # while lo < hi:
+        #     mid = (lo + hi) // 2
+        # keep searching as long as there is at least one number between lo and hi
+        while lo + 1 < hi:
+            mid = lo + (hi - lo) // 2
             # inclusive
             if self.canReplace(s, mid, k):
                 lo = mid
@@ -40,13 +43,15 @@ class Solution:
     def canReplace(self, s: str, sublen: int, k: int) -> bool:
         start = 0
         freq = {}
+        maxFreq = 0
         for end in range(len(s)):
             freq[s[end]] = freq.get(s[end], 0) + 1
-            # slide window to the right by 1, shrink window from the left by 1
             if end + 1 - start > sublen:
                 freq[s[start]] -= 1
                 start += 1
-            maxFreq = max(freq.values())
+            # update maxFreq with the max frequency of any character in the window
+            # maxFreq = max(maxFreq, freq[s[end]]) works better because freq[s[end]] is always the current max frequency, otherwise it would return before moving to this window
+            maxFreq = max(max(freq.values()), maxFreq)
             # if the number of replacements needed is less than or equal to k, return true
             if sublen - maxFreq <= k:
                 return True
