@@ -38,25 +38,27 @@ class Solution:
                 lo = mid
             else:
                 hi = mid
-        return lo
+        return hi
 
     def isValid(self, s: str, sublen: int, k: int) -> bool:
         # slide window of size sublen
         # check if it has at most k distinct characters
         # if so, return True
-        # else, return False        
+        # else, return False
         # freq = Counter(s[:sublen])
         # if len(freq) <= k:
         #     return True
+        print("this round sublen: ", sublen)
         freq = {}
         start = 0
         for end in range(len(s)):
             freq[s[end]] = freq.get(s[end], 0) + 1
-            if len(freq) <= k:
+            print("substr: ", s[start:end+1])
+            if end - start == sublen and len(freq) <= k:
                 return True
             if end + 1 - start > sublen:
                 freq[s[start]] -= 1
                 if freq[s[start]] == 0:
                     del freq[s[start]]
                 start += 1
-        return False   
+        return False
