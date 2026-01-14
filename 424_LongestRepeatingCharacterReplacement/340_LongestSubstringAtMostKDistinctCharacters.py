@@ -31,14 +31,15 @@
 
 class Solution:
     def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
-        lo, hi = k, len(s) + 1
+        lo, hi = -1, len(s)
         while lo + 1 < hi:
             mid = lo + (hi - lo) // 2
             if self.isValid(s, mid, k):
                 lo = mid
             else:
                 hi = mid
-        return hi
+        return lo+1
+
 
     def isValid(self, s: str, sublen: int, k: int) -> bool:
         # slide window of size sublen
