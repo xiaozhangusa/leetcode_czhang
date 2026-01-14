@@ -28,38 +28,34 @@
 
 # 1 <= s.length <= 5 * 104
 # 0 <= k <= 50
-
 class Solution:
     def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
-        lo, hi = -1, len(s)
+        lo, hi = 0, len(s) + 1
         while lo + 1 < hi:
             mid = lo + (hi - lo) // 2
             if self.isValid(s, mid, k):
                 lo = mid
             else:
                 hi = mid
-        return lo+1
+        return lo
 
 
     def isValid(self, s: str, sublen: int, k: int) -> bool:
-        # slide window of size sublen
-        # check if it has at most k distinct characters
-        # if so, return True
-        # else, return False
-        # freq = Counter(s[:sublen])
-        # if len(freq) <= k:
-        #     return True
-        print("this round sublen: ", sublen)
+        if sublen == 0: return True
         freq = {}
         start = 0
         for end in range(len(s)):
             freq[s[end]] = freq.get(s[end], 0) + 1
-            print("substr: ", s[start:end+1])
-            if end - start == sublen and len(freq) <= k:
-                return True
-            if end + 1 - start > sublen:
+            
+            # If window exceeds sublen, shrink it
+            if end - start + 1 > sublen:
                 freq[s[start]] -= 1
                 if freq[s[start]] == 0:
                     del freq[s[start]]
                 start += 1
+            
+            # Check validity only when window is exactly sublen
+            if end - start + 1 == sublen:
+                if len(freq) <= k:
+                    return True
         return False
