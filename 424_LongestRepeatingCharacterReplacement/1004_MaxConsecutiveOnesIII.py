@@ -32,16 +32,18 @@
 class Solution:
     def longestOnes(self, nums: List[int], k: int) -> int:
         start, end = 0, 0
-        freq = Counter()
+        flips = 0
         res = 0
         while end < len(nums):
-            freq[nums[end]] += 1
-            # shrink the window from the left if it has more than k distinct characters
-            while freq[0] > k:
-                freq[nums[start]] -= 1
-                if freq[nums[start]] == 0:
-                    del freq[nums[start]]
+            if nums[end] == 0:
+                flips += 1
+            # shrink the window from the left if it has more than k distinct characters until it's less than k
+            while flips > k:
+                if nums[start] == 0:
+                    flips -= 1
                 start += 1
             res = max(res, end + 1 - start)
+            # extend to the right
             end += 1
         return res
+
