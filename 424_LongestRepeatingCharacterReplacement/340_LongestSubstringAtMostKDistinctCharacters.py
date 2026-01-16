@@ -29,33 +29,51 @@
 # 1 <= s.length <= 5 * 104
 # 0 <= k <= 50
 class Solution:
-    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
-        lo, hi = 0, len(s) + 1
-        while lo + 1 < hi:
-            mid = lo + (hi - lo) // 2
-            if self.isValid(s, mid, k):
-                lo = mid
-            else:
-                hi = mid
-        return lo
+    # def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+    #     lo, hi = 0, len(s) + 1
+    #     while lo + 1 < hi:
+    #         mid = lo + (hi - lo) // 2
+    #         if self.isValid(s, mid, k):
+    #             lo = mid
+    #         else:
+    #             hi = mid
+    #     return lo
 
 
-    def isValid(self, s: str, sublen: int, k: int) -> bool:
-        if sublen == 0: return True
-        freq = {}
-        start = 0
-        for end in range(len(s)):
-            freq[s[end]] = freq.get(s[end], 0) + 1
+    # def isValid(self, s: str, sublen: int, k: int) -> bool:
+    #     if sublen == 0: return True
+    #     freq = {}
+    #     start = 0
+    #     for end in range(len(s)):
+    #         freq[s[end]] = freq.get(s[end], 0) + 1
             
-            # If window exceeds sublen, shrink it
-            if end - start + 1 > sublen:
+    #         # If window exceeds sublen, shrink it
+    #         if end - start + 1 > sublen:
+    #             freq[s[start]] -= 1
+    #             if freq[s[start]] == 0:
+    #                 del freq[s[start]]
+    #             start += 1
+            
+    #         # Check validity only when window is exactly sublen
+    #         if end - start + 1 == sublen:
+    #             if len(freq) <= k:
+    #                 return True
+    #     return False
+
+    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+        # two pointers
+        start, end = 0, 0
+        freq = Counter()
+        res = 0
+        while end < len(s):
+            freq[s[end]] += 1
+            # shrink the window from the left if it has more than k distinct characters
+            while len(freq) > k:
                 freq[s[start]] -= 1
                 if freq[s[start]] == 0:
                     del freq[s[start]]
                 start += 1
-            
-            # Check validity only when window is exactly sublen
-            if end - start + 1 == sublen:
-                if len(freq) <= k:
-                    return True
-        return False
+            res = max(res, end + 1 - start)
+            # now len(fre) <=k, attempt to expand the window to the right
+            end += 1
+        return res
