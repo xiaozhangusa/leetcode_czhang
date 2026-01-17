@@ -43,16 +43,17 @@ class Solution:
         while end < len(answerKey):
             freq[answerKey[end]] += 1
             flips = min(freq['T'], freq['F'])
-            print("flips: ", flips)
+            # print("flips: ", flips)
             while flips > k and start <= end:
-                print("answerKey: ", answerKey)
-                print("answerKey[start]: ", start, answerKey[start])
+                # print("answerKey: ", answerKey)
+                # print("answerKey[start]: ", start, answerKey[start])
                 freq[answerKey[start]] -= 1
                 # if freq[answerKey[start]] == 0:
                 #     del freq[answerKey[start]]
                 start += 1
+                flips = min(freq['T'], freq['F'])
             # res = max(res, max(freq.values()))
             res = max(res, (end + 1 - start))
-            print("res: ", res)
+            # print("res: ", res)
             end += 1
         return res
