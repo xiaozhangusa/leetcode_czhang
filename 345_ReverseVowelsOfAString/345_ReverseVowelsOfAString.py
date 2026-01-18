@@ -29,19 +29,22 @@
 
 class Solution:
     def reverseVowels(self, s: str) -> str:
+        l, r = 0, len(s)-1
+        vowels = [ 'a', 'e', 'i', 'o', 'u']
         res = list(s)
-        print("res: ", res)
-        vowels = ['a', 'e', 'i', 'o', 'u']
-        pos = []
-        for i in range(len(res)):
-            print("res[i].lower: ", res[i].lower())
-            if res[i].lower() in vowels:
-                pos.append(i)
-        posRe = pos[::-1]
-        print("pos: ", pos)
-        print("posRe: ", posRe)
-        for j in range(len(pos)):
-            cur = pos[j]
-            res[cur] = s[posRe[j]]
-        res = "".join(res)
-        return res
+        round = 0
+        while True:
+            while l < r and s[l].lower() not in vowels:
+                l += 1
+            while l < r and s[r].lower() not in vowels:
+                r -= 1
+            # now both l and r should be vowels
+            print("round: ", round)
+            print ("l and r: ", l, res[l], r, res[r])
+            if l < r:
+                res[l], res[r] = res[r], res[l]
+                l += 1
+                r -= 1
+            else:
+                break
+        return "".join(res)
