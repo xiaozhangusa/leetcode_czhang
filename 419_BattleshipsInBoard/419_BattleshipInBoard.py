@@ -33,6 +33,7 @@ class Solution:
             for c in range(n):
                 if board[r][c] == 'X':
                     res += 1
+                    # print("board: ", board, res)
                     board[r][c] = '.'
                     # try to extend vertically or horizontally to identify the entire battleship
                     for d in dirs:
@@ -40,5 +41,5 @@ class Solution:
                         while nr < m and nc < n and board[nr][nc] == 'X':
                             board[nr][nc] = '.'
                             # keep moving the same direction
-                            nr, nc = r + d[0], c + d[1]
+                            nr, nc = nr + d[0], nc + d[1]
         return res
