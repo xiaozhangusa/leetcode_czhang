@@ -26,20 +26,14 @@
 # Follow up: Could you do it in one-pass, using only O(1) extra memory and without modifying the values board?
 class Solution:
     def countBattleships(self, board: List[List[str]]) -> int:
+        if not board:
+            return 0
         m, n = len(board), len(board[0])
         res = 0
-        dirs = [(0, 1), (1, 0)]
         for r in range(m):
             for c in range(n):
                 if board[r][c] == 'X':
-                    res += 1
-                    # print("board: ", board, res)
-                    board[r][c] = '.'
-                    # try to extend vertically or horizontally to identify the entire battleship
-                    for d in dirs:
-                        nr, nc = r + d[0], c + d[1]
-                        while nr < m and nc < n and board[nr][nc] == 'X':
-                            board[nr][nc] = '.'
-                            # keep moving the same direction
-                            nr, nc = nr + d[0], nc + d[1]
+                    # Check if it's the top-left corner of a battleship
+                    if (r == 0 or board[r-1][c] == '.') and (c == 0 or board[r][c-1] == '.'):
+                        res += 1
         return res
