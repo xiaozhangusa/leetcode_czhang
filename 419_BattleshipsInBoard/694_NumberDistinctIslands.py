@@ -27,36 +27,55 @@
 
 class Solution:
     def numDistinctIslands(self, grid: List[List[int]]) -> int:
+        # if not grid or not grid[0]:
+        #     return 0
+        # m, n = len(grid), len(grid[0])
+        # visited = [[False] * n for _ in range(m)]
+        # islands = set()
+
+        # def dfs(r, c, direction, signature):
+        #     visited[r][c] = True
+        #     signature.append(direction)
+            
+        #     # Explore Down, Up, Right, Left in a consistent order
+        #     for dr, dc, d_char in [(1, 0, 'D'), (-1, 0, 'U'), (0, 1, 'R'), (0, -1, 'L')]:
+        #         nr, nc = r + dr, c + dc
+        #         if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1 and not visited[nr][nc]:
+        #             dfs(nr, nc, d_char, signature)
+            
+        #     # The "Vivid" part: Append '0' when backtracking
+        #     signature.append('0')
+
+        # for i in range(m):
+        #     for j in range(n):
+        #         if grid[i][j] == 1 and not visited[i][j]:
+        #             path = []
+        #             dfs(i, j, 'S', path) # 'S' for Start
+        #             islands.add("".join(path))
+                    
+        # return len(islands)
+
         if not grid or not grid[0]:
             return 0
         m, n = len(grid), len(grid[0])
-        distinctIsland = {}
+        islands = set()
         visited = [[False] * n for _ in range(m)]
-        curIsland = []
-        cnt = 0
 
-        def dfs(i, j):
-            if i < 0 or i >= m or j < 0 or j >= n:
-                return
-            visited[i][j] = True
-            if grid[i][j] == 1:
-                curIsland.append((i, j))
-            # stack
-            s = [(i, j)]
-            dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-            while s:
-                r, c = s.pop()
-                # extend to four dirs one by one
-                for d in dirs:
-                    nr, nc = r + d[0], c + d[1]
-                    s.append((nr, nc))
-            return
+        def dfs(r, c, d, signature):
+            visited[r][c] = True
+            signature.append(d)
+            for dx, dy, d in [(1, 0, 'D'), (-1, 0, 'U'), (0, 1, 'R'), (0, -1, 'L')]:
+                nr, nc = r + dx, c + dy
+                print("nr, nc: ", nr, nc)
+                if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1 and not visited[nr][nc]:
+                    dfs(nr, nc, d, signature)
+            path.append('0')
 
         for i in range(m):
             for j in range(n):
                 if grid[i][j] == 1:
-                    dfs(i, j)
-                    if curIsland not in distinctIsland:
-                        distinctIsland[curIsland] += 1
-                    curIsland = []
-        return cnt
+                    path = []
+                    dfs(i, j, 'S', path)  # use 'S' to mark start
+                    path = "".join(path)
+                    islands.add(path)
+        return len(islands)
