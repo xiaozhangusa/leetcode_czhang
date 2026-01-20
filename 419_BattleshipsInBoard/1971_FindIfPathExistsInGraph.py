@@ -44,9 +44,9 @@ class Solution:
             rootX = find(x)
             rootY = find(y)
             if rootX != rootY:
-                if rootX < rootY:
+                if rootX > rootY:
                     rootX, rootY = rootY, rootX
-                parent[rootY] == parent[rootX]
+                parent[rootY] = parent[rootX]
         
         # make set
         parent = list(range(n))
