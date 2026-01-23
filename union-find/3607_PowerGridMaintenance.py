@@ -158,7 +158,7 @@ class Graph:
     
     def add_edge(self, u: int, v: int):
         self.adj[u].append(v)
-        self.adj[v].append(v)
+        self.adj[v].append(u)
 
     def get_vertex(self, id: int) -> Vertex:
         return self.vertices[id]
@@ -178,20 +178,41 @@ class Solution:
             graph.add_edge(conn[0], conn[1])
         
         # find Strongly Connected Components
-        grids = defaultdict(list)  # grid_id -> list of vertices in the same grid
+        # grids = defaultdict(list)  # grid_id -> list of vertices in the same grid
+        grids = defaultdict(list)
         grid_id = 0
-        def traverse(u: int, grid_id: int, grids: defaultdict(list), graph: Graph):
+        def traverse(u: int, grid_id: int, grid: List[int], grids: defaultdict(list), graph: Graph):
             graph.get_vertex(u).grid_id = grid_id
-            grids[grid_id].append(u)
+            heapq.heappush(grid, u)
             for v in graph.get_adj(u):
                 if graph.get_vertex(v).grid_id == -1:
-                    traverse(v, grid_id, grids, graph)
+                    traverse(v, grid_id, grid, grids, graph)
         
         for i in range(1, c + 1):
             # not visited yet, start from this vertex
-            if graph.get_vertex(i).grid_id == -1:
-                traverse(i, grid_id, grids, graph)
+            v = graph.get_vertex(i)
+            print("v(vertex_id, grid_id): ", v.vertex_id, v.grid_id)
+            if v.grid_id == -1:
+                grid = [] # which vertices are in the same grid, and it would be heapq list
+                traverse(i, grid_id, grid, grids, graph)
+                grids[grid_id] = grid
                 grid_id += 1
 
         print("grids: ", grids)
-        return 
+        ans = []
+        for op, i in queries:
+            # op == 1: query
+            # op == 2: offline
+            v = graph.get_vertex(i)
+            if op == 1:
+                if v.offline:
+                    ans.append(v.vertex_id)
+                else:
+                    grid = grids[v.grid_id]
+                    # pop until the top is not offline
+                    while grid and graph.get_vertex(grid[0]).offline:
+                        heapq.heappop(grid)
+                    ans.append(grid[0] if grid else -1)
+            elif op == 2:
+                v.offline = True
+        return ans
