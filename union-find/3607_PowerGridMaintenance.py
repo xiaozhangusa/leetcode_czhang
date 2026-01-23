@@ -1,218 +1,83 @@
-# # You are given an integer c representing c power stations, each with a unique identifier id from 1 to c (1‑based indexing).
+import heapq
+import sys
+from collections import defaultdict
+from typing import List, Dict
 
-# # These stations are interconnected via n bidirectional cables, represented by a 2D array connections, where each element connections[i] = [ui, vi] indicates a connection between station ui and station vi. Stations that are directly or indirectly connected form a power grid.
-
-# # Initially, all stations are online (operational).
-
-# # You are also given a 2D array queries, where each query is one of the following two types:
-
-# # [1, x]: A maintenance check is requested for station x. If station x is online, it resolves the check by itself. If station x is offline, the check is resolved by the operational station with the smallest id in the same power grid as x. If no operational station exists in that grid, return -1.
-
-# # [2, x]: Station x goes offline (i.e., it becomes non-operational).
-
-# # Return an array of integers representing the results of each query of type [1, x] in the order they appear.
-
-# # Note: The power grid preserves its structure; an offline (non‑operational) node remains part of its grid and taking it offline does not alter connectivity.
-
- 
-
-# # Example 1:
-
-# # Input: c = 5, connections = [[1,2],[2,3],[3,4],[4,5]], queries = [[1,3],[2,1],[1,1],[2,2],[1,2]]
-
-# # Output: [3,2,3]
-
-# # Explanation:
-
-
-
-# # Initially, all stations {1, 2, 3, 4, 5} are online and form a single power grid.
-# # Query [1,3]: Station 3 is online, so the maintenance check is resolved by station 3.
-# # Query [2,1]: Station 1 goes offline. The remaining online stations are {2, 3, 4, 5}.
-# # Query [1,1]: Station 1 is offline, so the check is resolved by the operational station with the smallest id among {2, 3, 4, 5}, which is station 2.
-# # Query [2,2]: Station 2 goes offline. The remaining online stations are {3, 4, 5}.
-# # Query [1,2]: Station 2 is offline, so the check is resolved by the operational station with the smallest id among {3, 4, 5}, which is station 3.
-# # Example 2:
-
-# # Input: c = 3, connections = [], queries = [[1,1],[2,1],[1,1]]
-
-# # Output: [1,-1]
-
-# # Explanation:
-
-# # There are no connections, so each station is its own isolated grid.
-# # Query [1,1]: Station 1 is online in its isolated grid, so the maintenance check is resolved by station 1.
-# # Query [2,1]: Station 1 goes offline.
-# # Query [1,1]: Station 1 is offline and there are no other stations in its grid, so the result is -1.
- 
-
-# # Constraints:
-
-# # 1 <= c <= 105
-# # 0 <= n == connections.length <= min(105, c * (c - 1) / 2)
-# # connections[i].length == 2
-# # 1 <= ui, vi <= c
-# # ui != vi
-# # 1 <= queries.length <= 2 * 105
-# # queries[i].length == 2
-# # queries[i][0] is either 1 or 2.
-# # 1 <= queries[i][1] <= c
-
-# class Vertex:
-#     def __init__(self, vertex_id: int = None):
-#         self.vertex_id = vertex_id
-#         self.offline = False
-#         self.power_grid_id = -1
-#         if vertex_id is not None:
-#             self.vertex_id = vertex_id
-
-
-# class Graph:
-#     def __init__(self):
-#         self.adj: Dict[int, List[int]] = {}
-#         self.vertices: Dict[int, Vertex] = {}
-
-#     def add_vertex(self, id: int, value: Vertex):
-#         self.vertices[id] = value
-#         self.adj[id] = []
-
-#     def add_edge(self, u: int, v: int):
-#         self.adj[u].append(v)
-#         self.adj[v].append(u)
-
-#     def get_vertex_value(self, id: int) -> Vertex:
-#         return self.vertices[id]
-
-#     def get_connected_vertices(self, id: int) -> List[int]:
-#         return self.adj[id]
-
-
-# class Solution:
-#     def traverse(
-#         self, u: Vertex, power_grid_id: int, power_grid: List[int], graph: Graph
-#     ):
-#         u.power_grid_id = power_grid_id
-#         heapq.heappush(power_grid, u.vertex_id)
-#         for vid in graph.get_connected_vertices(u.vertex_id):
-#             v = graph.get_vertex_value(vid)
-#             if v.power_grid_id == -1:
-#                 self.traverse(v, power_grid_id, power_grid, graph)
-
-#     def processQueries(
-#         self, c: int, connections: List[List[int]], queries: List[List[int]]
-#     ) -> List[int]:
-#         graph = Graph()
-#         for i in range(c):
-#             v = Vertex(i + 1)
-#             graph.add_vertex(i + 1, v)
-
-#         for conn in connections:
-#             graph.add_edge(conn[0], conn[1])
-
-#         power_grids = []
-#         power_grid_id = 0
-
-#         for i in range(1, c + 1):
-#             v = graph.get_vertex_value(i)
-#             if v.power_grid_id == -1:
-#                 power_grid = []
-#                 self.traverse(v, power_grid_id, power_grid, graph)
-#                 power_grids.append(power_grid)
-#                 power_grid_id += 1
-
-#         ans = []
-#         for q in queries:
-#             op, x = q[0], q[1]
-#             if op == 1:
-#                 vertex = graph.get_vertex_value(x)
-#                 if not vertex.offline:
-#                     ans.append(x)
-#                 else:
-#                     power_grid = power_grids[vertex.power_grid_id]
-#                     while (
-#                         power_grid
-#                         and graph.get_vertex_value(power_grid[0]).offline
-#                     ):
-#                         heapq.heappop(power_grid)
-#                     ans.append(power_grid[0] if power_grid else -1)
-#             elif op == 2:
-#                 graph.get_vertex_value(x).offline = True
-
-#         return ans
-
+# Increase recursion limit to handle deep DFS in large power grids
+sys.setrecursionlimit(200000)
 
 class Vertex:
-    def __init__(self, vertex_id: int = None):
+    def __init__(self, vertex_id: int):
         self.vertex_id = vertex_id
         self.offline = False
         self.grid_id = -1
-    
+
 class Graph:
     def __init__(self):
-        self.adj: Dict[int, List[int]] = {}
-        self.vertices: Dict[int, Vertex] = {}
-    
-    def add_vertex(self, id: int, value: Vertex):
-        self.vertices[id] = value
-        self.adj[id] = []
-    
+        self.adj = defaultdict(list)
+        self.vertices = {}
+
+    def add_vertex(self, node_id: int, vertex_obj: Vertex):
+        self.vertices[node_id] = vertex_obj
+
     def add_edge(self, u: int, v: int):
         self.adj[u].append(v)
         self.adj[v].append(u)
 
-    def get_vertex(self, id: int) -> Vertex:
-        return self.vertices[id]
-    
-    def get_adj(self, id: int) -> List[int]:
-        return self.adj[id]
+    def get_vertex(self, node_id: int) -> Vertex:
+        return self.vertices[node_id]
 
+    def get_adj(self, node_id: int) -> List[int]:
+        return self.adj[node_id]
 
 class Solution:
     def processQueries(self, c: int, connections: List[List[int]], queries: List[List[int]]) -> List[int]:
-        # build graph
+        # 1. Build the graph Adjacency List
         graph = Graph()
-        for i in range(c):
-            v = Vertex(i + 1)
-            graph.add_vertex(i + 1, v)
-        for conn in connections:
-            graph.add_edge(conn[0], conn[1])
-        
-        # find Strongly Connected Components
-        # grids = defaultdict(list)  # grid_id -> list of vertices in the same grid
-        grids = defaultdict(list)
-        grid_id = 0
-        def traverse(u: int, grid_id: int, grid: List[int], grids: defaultdict(list), graph: Graph):
-            graph.get_vertex(u).grid_id = grid_id
-            heapq.heappush(grid, u)
-            for v in graph.get_adj(u):
-                if graph.get_vertex(v).grid_id == -1:
-                    traverse(v, grid_id, grid, grids, graph)
-        
         for i in range(1, c + 1):
-            # not visited yet, start from this vertex
-            v = graph.get_vertex(i)
-            print("v(vertex_id, grid_id): ", v.vertex_id, v.grid_id)
-            if v.grid_id == -1:
-                grid = [] # which vertices are in the same grid, and it would be heapq list
-                traverse(i, grid_id, grid, grids, graph)
-                grids[grid_id] = grid
-                grid_id += 1
+            graph.add_vertex(i, Vertex(i))
+        for u, v in connections:
+            graph.add_edge(u, v)
 
-        print("grids: ", grids)
+        # 2. Pre-process Connected Components (Grids) using DFS
+        # We store each grid's station IDs in a Min-Heap for O(log N) access to the smallest ID.
+        grids = {} 
+        grid_id_counter = 0
+
+        def traverse(u_id, g_id, grid_heap):
+            u_node = graph.get_vertex(u_id)
+            u_node.grid_id = g_id
+            heapq.heappush(grid_heap, u_id)
+            for v_id in graph.get_adj(u_id):
+                if graph.get_vertex(v_id).grid_id == -1:
+                    traverse(v_id, g_id, grid_heap)
+
+        for i in range(1, c + 1):
+            v_node = graph.get_vertex(i)
+            if v_node.grid_id == -1:
+                new_heap = []
+                traverse(i, grid_id_counter, new_heap)
+                grids[grid_id_counter] = new_heap
+                grid_id_counter += 1
+
+        # 3. Process Queries
         ans = []
-        for op, i in queries:
-            # op == 1: query
-            # op == 2: offline
-            v = graph.get_vertex(i)
-            if op == 1:
-                if v.offline:
-                    ans.append(v.vertex_id)
+        for op, x in queries:
+            v_node = graph.get_vertex(x)
+            if op == 1: # Maintenance Check
+                # Rule: If online, resolve by itself.
+                if not v_node.offline:
+                    ans.append(v_node.vertex_id)
                 else:
-                    grid = grids[v.grid_id]
-                    # pop until the top is not offline
-                    while grid and graph.get_vertex(grid[0]).offline:
-                        heapq.heappop(grid)
-                    ans.append(grid[0] if grid else -1)
-            elif op == 2:
-                v.offline = True
+                    # Rule: If offline, resolve by the smallest ID operational station in the same grid.
+                    grid_heap = grids[v_node.grid_id]
+                    # LAZY DELETION: discard any nodes from the top of the heap if they have gone offline.
+                    while grid_heap and graph.get_vertex(grid_heap[0]).offline:
+                        heapq.heappop(grid_heap)
+                    
+                    ans.append(grid_heap[0] if grid_heap else -1)
+            
+            elif op == 2: # Station goes Offline
+                v_node.offline = True
+                
         return ans
