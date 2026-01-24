@@ -37,17 +37,17 @@ class Solution:
         heap_list = []
         res = [0] * n
         for idx, s in enumerate(score):
-            heapq.heappush(heap_list, (idx, -s))
+            heapq.heappush(heap_list, (-s, idx))
         place = 1
         while heap_list:
-            idx = heapq.heappop(heap_list)[0]
+            idx = heapq.heappop(heap_list)[1]
             if place == 1:
                 res[idx] = "Gold Medal"
             elif place == 2:
                 res[idx] = "Silver Medal"
             elif place == 3:
-                res[idx] == "Bronze Medal"
+                res[idx] = "Bronze Medal"
             else:
-                res[idx] = place
+                res[idx] = str(place)
             place +=1 
-        return res            
+        return res
