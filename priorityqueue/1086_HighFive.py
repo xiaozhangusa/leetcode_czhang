@@ -43,4 +43,4 @@ class Solution:
             avg = (-tot) // cnt
             res.append((id, avg))
             res.sort(key=lambda x: x[1])
-            return res
+        return res
