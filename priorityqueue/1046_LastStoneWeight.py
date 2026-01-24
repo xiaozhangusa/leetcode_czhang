@@ -30,15 +30,23 @@
 # 1 <= stones.length <= 30
 # 1 <= stones[i] <= 1000
 
+import heapq
+from typing import List
+
 class Solution:
     def lastStoneWeight(self, stones: List[int]) -> int:
-        heap = [-s for s in stones]
-        heapq.heapify(heap)
-        while len(heap) >= 2:
-            print("heap: ", heap)
-            h1 = heapq.heappop(heap)
-            h2 = heapq.heappop(heap)
-            if h1 < h2:
-                nh = h1 - h2 
-                heapq.heappush(heap, nh)
-        return heapq.heappop(heap)*(-1) if len(heap) == 1 else 0
+        # Most pythonic way to initialize a max-heap: list comprehension with negation
+        max_heap = [-s for s in stones]
+        heapq.heapify(max_heap)
+        
+        while len(max_heap) > 1:
+            # Pop the two heaviest stones
+            first = heapq.heappop(max_heap)
+            second = heapq.heappop(max_heap)
+            
+            # If they are not equal, push the difference back
+            if first != second:
+                heapq.heappush(max_heap, first - second)
+                
+        # If there's a stone left, it will be at index 0. Otherwise, 0.
+        return -max_heap[0] if max_heap else 0
