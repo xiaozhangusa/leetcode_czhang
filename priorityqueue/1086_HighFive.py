@@ -36,10 +36,11 @@ class Solution:
         for id in highfive:
             tot, cnt = 0, 0
             score_heap = highfive[id]
+            print("score_heap: ", id, score_heap)
             while cnt < 5:
                 tot += heapq.heappop(score_heap)
-                cnt -= 1
-            avg = (-tot) // 5
+                cnt += 1
+            avg = (-tot) // cnt
             res.append((id, avg))
             res.sort(key=lambda x: x[1])
             return res
