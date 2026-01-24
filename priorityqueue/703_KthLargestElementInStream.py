@@ -61,12 +61,13 @@ class KthLargest:
 
     def add(self, val: int) -> int:
         # what if len(self.heap) < k?
-        if val > self.heap[0] and len(self.heap) == self.k:
+        if len(self.heap) == 0:
+            heapq.heappush(self.heap, val)
+        elif val > self.heap[0] and len(self.heap) == self.k:
             heapq.heappop(self.heap)
             heapq.heappush(self.heap, val)
         return self.heap[0]
         
-
 
 # Your KthLargest object will be instantiated and called as such:
 # obj = KthLargest(k, nums)
