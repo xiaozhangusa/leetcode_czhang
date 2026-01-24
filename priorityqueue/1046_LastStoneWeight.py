@@ -32,12 +32,13 @@
 
 class Solution:
     def lastStoneWeight(self, stones: List[int]) -> int:
-        heap = stones
+        heap = [-s for s in stones]
         heapq.heapify(heap)
         while len(heap) >= 2:
-            h1 = heapq.heappop(stones)
-            h2 = heapq.heappop(stones)
-            if h1 > h2:
+            print("heap: ", heap)
+            h1 = heapq.heappop(heap)
+            h2 = heapq.heappop(heap)
+            if h1 < h2:
                 nh = h1 - h2 
                 heapq.heappush(heap, nh)
-        return heapq.heappop(heap) if len(heap) == 1 else 0
+        return heapq.heappop(heap)*(-1) if len(heap) == 1 else 0
