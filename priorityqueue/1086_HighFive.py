@@ -42,5 +42,5 @@ class Solution:
                 cnt += 1
             avg = (-tot) // cnt
             res.append((id, avg))
-            res.sort(key=lambda x: x[1])
+            res.sort(key=lambda x: x[0])
         return res
