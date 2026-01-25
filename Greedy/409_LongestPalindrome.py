@@ -30,9 +30,11 @@ class Solution:
         char_dict = Counter(s)
         print(char_dict)
         l, odd = 0, 0
-        for c in char_dict:
-            if char_dict[c] % 2 == 0:
-                l += char_dict[c]
+        cnt = sorted(char_dict.values(), reverse=True)
+        for i in range(len(cnt)):
+            if cnt[i] % 2 == 0:
+                l += cnt[i]
             else:
+                l += cnt[i] - 1
                 odd += 1
         return l + 1 if odd > 0 else l
