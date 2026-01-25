@@ -23,6 +23,10 @@
 
 class Solution:
     def longestPalindrome(self, s: str) -> int:
+        # idea: count the frequency of each character
+        # if the frequency is even, add it to the length
+        # if the frequency is odd, add it to the length minus 1
+        # and add 1 to the length if there is any odd frequency
         char_dict = Counter(s)
         print(char_dict)
         l, odd = 0, 0
