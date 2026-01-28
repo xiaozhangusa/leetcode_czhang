@@ -40,11 +40,19 @@ class Solution:
             # need to return $5
             elif b == 10:
                 if bill_dict[5] < 1:
+                    print(bill_dict)
                     return False
                 bill_dict[b] += 1
+                bill_dict[5] -= 1
             # need to return either ($10 + $5) or ($5 x 3)
             elif b == 20:
                 if not ((bill_dict[10] > 0 and bill_dict[5] > 0) or (bill_dict[5] >= 3)):
+                    print(bill_dict)
                     return False
+                elif bill_dict[10] > 0 and bill_dict[5] > 0:
+                    bill_dict[10] -= 1
+                    bill_dict[5] -= 1
+                elif bill_dict[5] >= 3:
+                    bill_dict[5] -= 3
                 bill_dict[b] += 1
-            return True
+        return True
