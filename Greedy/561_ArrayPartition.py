@@ -28,9 +28,4 @@ class Solution:
     def arrayPairSum(self, nums: List[int]) -> int:
         # idea: sort the array, put all smaller numbers in the first pair, then the second pair, and so on
         nums.sort()
-        s = 0
-        while len(nums) > 1:
-            n1, n2 = nums.pop(0), nums.pop(0)
-            # print("n1, n2: ", n1, n2)
-            s += min(n1, n2)
-        return s
+        return sum(nums[::2])
