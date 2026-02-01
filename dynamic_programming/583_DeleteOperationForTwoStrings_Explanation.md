@@ -154,6 +154,112 @@ The original logic was **blind to deletions from `word2`**. It only knew how to 
 | **e** | 2 | **1** | 2 | 3 |
 | **a** | 3 | 2 | **1** | **2** ✅ |
 
-The correct logic takes the `min(dp[i-1][j], dp[i][j-1])`, allowing it to find the minimum deletions from either string.
+---
 
+## Deletions vs. Standard Edit Distance
 
+In the **Standard Edit Distance** (Levenshtein Distance), we have three operations: Insert, Delete, and Replace. In this problem, we **only** have Deletion.
+
+### 1. The Perspective Shift
+In standard Edit Distance, we usually ask: *"How many operations to transform `word1` into `word2`?"* This means:
+- **Delete**: Remove a character from `word1`.
+- **Insert**: Add a character to `word1`.
+- **Replace**: Change a character in `word1`.
+
+In **this problem**, the question is: *"How many deletions to make both strings the same?"* 
+Because you can delete from **either** string, the operations become symmetric.
+
+### 2. The Mathematical Symmetry
+**An "Insert" into `word1` is mathematically equivalent to a "Delete" from `word2`.**
+
+Let's look at the DP transition's "No Match" cases:
+
+| Logic in DP | Action in this problem | Standard Edit Distance View |
+| :--- | :--- | :--- |
+| `dp[i-1][j] + 1` | Delete `word1[i-1]` | **Delete** (remove from source) |
+| `dp[i][j-1] + 1` | Delete `word2[j-1]` | **Insert** (add to source to match target) |
+
+#### Example: `word1 = "ab"`, `word2 = "abc"`
+- **To make them same by deleting**: You delete 'c' from `word2`. (1 step)
+- **To transform `ab` → `abc`**: You insert 'c' into `word1`. (1 step)
+
+### 3. Vivid Examples: Why Insert == Delete
+
+Imagine you have two strings, and you are trying to align them by placing characters into "slots". When characters don't match, you must create a **Gap** (`-`).
+
+#### Example: Aligning "ab" and "abc"
+
+Imagine a "Cursor" pointing at the current characters we are trying to match.
+
+**Scenario A: "I'm word1, I will INSERT 'c'"**
+```text
+word1:  a  b [c]  <-- You added a new character 'c'
+word2:  a  b  c   <-- This character now matches word2
+```
+- In the DP table, this means you satisfied `word2`'s 'c' but didn't "use up" any character from your original `word1`. 
+- **State move**: `dp[i][j]` depends on `dp[i][j-1]` (same row, previous column).
+
+**Scenario B: "I'm word2, I will DELETE 'c'"**
+```text
+word1:  a  b      <-- You stay the same
+word2:  a  b (c)  <-- You throw 'c' in the trash
+```
+- In the DP table, this also means you are looking at the same prefix of `word1` but you've moved past 'c' in `word2`.
+- **State move**: `dp[i][j]` depends on `dp[i][j-1]`.
+
+#### The "Mirror" Effect
+Whether you call it an **Insertion** in `word1` or a **Deletion** from `word2`, the physical alignment looks exactly the same:
+
+| String | Slot 1 | Slot 2 | Slot 3 |
+| :--- | :--- | :--- | :--- |
+| **word1** | a | b | **- (GAP)** |
+| **word2** | a | b | **c** |
+
+- **Looking from top to bottom**: "There is a gap in `word1`, I need to **Insert** 'c'."
+- **Looking from bottom to top**: "There is an extra 'c' in `word2` compared to `word1`, I need to **Delete** 'c'."
+
+### 4. Deep Dive: What does `dp[i][j-1]` really mean?
+
+Let's simplify. Forget "Gaps" and think about **Two Pointers** moving along the strings.
+
+#### The State Definition
+- `i`: Pointer to the end of the part of `word1` we are currently looking at.
+- `j`: Pointer to the end of the part of `word2` we are currently looking at.
+
+#### The "Pointer Race" Visualization
+Imagine you are trying to reach the destination `dp[i][j]`. To get there, you must have successfully **processed** (or "accounted for") everything up to index `i` in `word1` and `j` in `word2`.
+
+When you move from `dp[i][j-1]` to `dp[i][j]`:
+
+| Pointer | Previous State `dp[i][j-1]` | Current State `dp[i][j]` | Result |
+| :--- | :--- | :--- | :--- |
+| **`word1` Pointer** | At index `i` | At index `i` | **Stayed still** (No new char) |
+| **`word2` Pointer** | At index `j-1` | At index `j` | **Advanced** (New char `word2[j-1]`) |
+
+#### "Satisfied word2" vs "Didn't use up word1"
+1.  **"Satisfied `word2`"**: This means the `word2` pointer successfully moved forward. You have now **finished dealing with** its new character `word2[j-1]`.
+2.  **"Didn't use up `word1`"**: This means the `word1` pointer didn't move. You are using the **exact same prefix** of `word1` that you had in the previous step.
+
+#### The "Vivid" Reasoning
+If `word2` moved forward but `word1` didn't, how did you "deal with" that new character in `word2`?
+- **Since you didn't move the `word1` pointer to find a match, the only way to "account for" that new character is to DELETE it.**
+
+#### Example: `word1 = "A"`, `word2 = "AB"`
+- `dp[1][1]` (A vs A): Cost = 0.
+- Now look at `dp[1][2]` (A vs AB):
+    - You want to finish `word2` (move pointer from 'A' to 'B').
+    - You decide **not** to move the pointer in `word1` (it stays at 'A').
+    - To move past the 'B' in `word2` without a matching character in `word1`, you pay **+1 deletion** from `word2`.
+    - `dp[1][2] = dp[1][1] + 1 = 1`.
+
+### 5. Quick Summary: The Deletion Mapping
+
+Yes, your interpretation is exactly correct! Here is the definitive map:
+
+| DP Move | Action | Meaning |
+| :--- | :--- | :--- |
+| **`dp[i-1][j] + 1`** | **Delete from `word1`** | `word1` pointer moved forward, but `word2` pointer stayed still. The extra character in `word1` was thrown away. |
+| **`dp[i][j-1] + 1`** | **Delete from `word2`** | `word2` pointer moved forward, but `word1` pointer stayed still. The extra character in `word2` was thrown away. |
+| **`dp[i-1][j-1]`** | **Keep Both** | (Only if characters match) Both pointers moved forward together because they "found" each other. Cost is 0. |
+
+---
