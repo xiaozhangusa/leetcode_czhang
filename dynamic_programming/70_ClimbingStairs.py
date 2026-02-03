@@ -30,8 +30,8 @@ class Solution:
         # just like fibonacci
         if n < 2:
             return n
-        ways = [0] * (n + 1)
-        ways[0], ways[1] = 0, 1
-        for i in range(2, n + 1):
+        ways = [0] * n
+        ways[0], ways[1] = 1, 2
+        for i in range(2, n):
             ways[i] = ways[i - 1] + ways[i - 2]
-        return ways[n]
+        return ways[n - 1]
