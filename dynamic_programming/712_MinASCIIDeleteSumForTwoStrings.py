@@ -28,26 +28,26 @@
 class Solution:
     def minimumDeleteSum(self, s1: str, s2: str) -> int:
         l1, l2 = len(s1), len(s2)
+        # dp[i][j] is the min ASCII delete sum for s1[:i] and s2[:j]
         dp = [[0 for _ in range(l2 + 1)] for _ in range(l1 + 1)]
+        
+        # Base cases: if one string is empty, we must delete all chars of the other
+        # oth need to start from 1
+        for i in range(1, l1 + 1):
+            dp[i][0] = dp[i-1][0] + ord(s1[i-1])
+            
+        for j in range(1, l2 + 1):
+            dp[0][j] = dp[0][j-1] + ord(s2[j-1])
+            
         # build the dp
         for i in range(1, l1 + 1):
             for j in range(1, l2 + 1):
                 if s1[i - 1] == s2[j - 1]:
                     dp[i][j] = dp[i - 1][j - 1]
                 else:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + 1
-        # backtrack
-        i, j = l1, l2
-        res = 0
-        while i > 0 and j > 0:
-            if dp[i][j] == dp[i - 1][j - 1]:
-                i -= 1
-                j -= 1
-            elif dp[i][j] == dp[i - 1][j]:
-                res += int(s1[i])
-                i -= 1
-            elif dp[i][j] == dp[i][j - 1]:
-                res += int(s2[j])
-                j -= 1
-            print("i, j: ", i, j)
-        return res
+                    dp[i][j] = min(
+                        dp[i - 1][j] + ord(s1[i - 1]), 
+                        dp[i][j - 1] + ord(s2[j - 1])
+                    )
+        
+        return dp[l1][l2]
