@@ -263,3 +263,53 @@ Yes, your interpretation is exactly correct! Here is the definitive map:
 | **`dp[i-1][j-1]`** | **Keep Both** | (Only if characters match) Both pointers moved forward together because they "found" each other. Cost is 0. |
 
 ---
+
+### 6. Perspective: Forward vs. Backward
+
+It depends on whether you are looking at the **Loops** or the **Formula**.
+
+#### **A. The Backward View (The Formula)**
+When you write `dp[i][j] = dp[i-1][j] + 1`:
+- You are looking **backward** to a result you calculated previously. 
+- You are standing at index 3 and looking back at index 2.
+
+#### **B. The Forward View (The Progression)**
+As the code actually runs:
+- Your loops start at 0 and go to N.
+- To reach the current character `word1[i-1]`, you had to move your pointer **forward** from the beginning of the string.
+
+#### **Summary for the Mapping Table:**
+When I say "word1 pointer moved forward", I am describing the **Action on the String**:
+- You were at index `i-1` (dealing with `"se"`).
+- To reach index `i` (dealing with `"sea"`), your pointer advanced **forward** by one character.
+
+**Analogy:**
+When you drive a car, you are moving **forward** (Progression). But to know where you've been, you look into the rearview mirror (**Backward Dependency**).
+
+---
+
+### 7. What about "Replacement"?
+
+You asked: *"So replacement in standard edit distance can't be treated as delete or insertion?"*
+
+**The short answer is: You *could* simulate it with them, but the cost would be different.**
+
+#### **1. The Cost Difference**
+In standard Levenshtein distance:
+- **Replace 'a' with 'b'** = **Cost 1**.
+- **Delete 'a' then Insert 'b'** = **Cost 1 + 1 = Cost 2**.
+
+Because the goal of DP is the **minimum** cost, the algorithm treats "Replace" as its own separate shortcut. If you only had Delete and Insert, every replacement would cost you **2** instead of **1**.
+
+#### **2. How this relates to Problem 583**
+In this problem ("Delete Operation for Two Strings"), **Replacement is forbidden**. 
+- To change "sea" to "tea" (1 character difference) using *only* deletes:
+    - You must delete 's' (Cost 1)
+    - You must delete 't' (Cost 1)
+- **Total Cost: 2**.
+
+#### **3. The Table View**
+- **Standard Edit Distance**: `dp[i][j]` considers the diagonal neighbor `dp[i-1][j-1] + 1` (The "Price" of Replacement).
+- **Problem 583**: `dp[i][j]` ignores that diagonal "shortcut". It forces you to go through the "Delete word1" (`dp[i-1][j] + 1`) or "Delete word2" (`dp[i][j-1] + 1`) paths.
+
+**Summary**: Replacement is basically a "discount" offered in standard Edit Distance. In this problem, there is no discount—you pay the full price of two deletions.
