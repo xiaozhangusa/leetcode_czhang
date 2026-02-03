@@ -313,3 +313,58 @@ In this problem ("Delete Operation for Two Strings"), **Replacement is forbidden
 - **Problem 583**: `dp[i][j]` ignores that diagonal "shortcut". It forces you to go through the "Delete word1" (`dp[i-1][j] + 1`) or "Delete word2" (`dp[i][j-1] + 1`) paths.
 
 **Summary**: Replacement is basically a "discount" offered in standard Edit Distance. In this problem, there is no discount—you pay the full price of two deletions.
+
+---
+
+## 8. Backtracking the Deletion Path
+
+To find exactly which characters were deleted and in what order, we backtrack from `dp[l1][l2]` back to `dp[0][0]`.
+
+### The Core Logic
+When we are at `dp[i][j]`:
+1.  **If `word1[i-1] == word2[j-1]`**: This character is kept (it's part of the LCS). Move diagonally to `dp[i-1][j-1]`.
+2.  **Else**: We look at where the minimum value came from in the DP table:
+    - If `dp[i-1][j] <= dp[i][j-1]`: The optimal path came from deleting `word1[i-1]`. Move to `dp[i-1][j]`.
+    - Else: The optimal path came from deleting `word2[j-1]`. Move to `dp[i][j-1]`.
+
+### Python Implementation
+
+```python
+i, j = len(word1), len(word2)
+steps = []
+
+while i > 0 or j > 0:
+    if i > 0 and j > 0 and word1[i-1] == word2[j-1]:
+        # Characters match: Keep this character
+        i -= 1
+        j -= 1
+    elif i > 0 and (j == 0 or dp[i-1][j] <= dp[i][j-1]):
+        # Word1 character was deleted
+        steps.append(f"Delete '{word1[i-1]}' from word1 at index {i-1}")
+        i -= 1
+    else:
+        # Word2 character was deleted
+        steps.append(f"Delete '{word2[j-1]}' from word2 at index {j-1}")
+        j -= 1
+
+# Steps are collected in reverse order (from bottom-right to top-left), 
+# so we reverse them for chronological display.
+for s in reversed(steps):
+    print(s)
+```
+
+---
+
+## 9. Backtracking Example (sea vs eat)
+
+| Step | Current State | Match? | Transition | Action |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | `dp[3][3]` (a vs t) | No | `dp[3][2]` (1) < `dp[2][3]` (3) | **Delete 't' (word2)** |
+| 2 | `dp[3][2]` (a vs a) | **Yes** | Move to `dp[2][1]` | **Keep 'a'** |
+| 3 | `dp[2][1]` (e vs e) | **Yes** | Move to `dp[1][0]` | **Keep 'e'** |
+| 4 | `dp[1][0]` (s vs -) | N/A | Only `i > 0` remains | **Delete 's' (word1)** |
+
+**Final Deletion Order**:
+1. Delete 's' from word1
+2. Delete 't' from word2
+**Remaining String**: "ea"
