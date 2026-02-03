@@ -109,3 +109,29 @@ The recurrence `max(f(i-1, j), f(i, j-1))` **implicitly covers the 'drop both' c
 - `f(i, j-1)` explores all possibilities where `nums2[j]` is ignored. One of those possibilities is that `nums1[i]` is *also* ignored later in the recursion.
 
 Mathematically, $f(i-1, j-1)$ is always less than or equal to both $f(i-1, j)$ and $f(i, j-1)$. Therefore, we don't need a third branch specifically for "drop both"—it is already captured within the other two.
+
+---
+
+## Complexity Analysis: Evaluating Recursion Depth
+
+A common claim is that the recursion stack size is $O(n1 + n2)$ or $O(\max(n1, n2))$. Let's evaluate exactly why this is true.
+
+### 1. Height of the Recursion Tree (Space Complexity)
+In the recursive version of this problem, the maximum depth of the stack is determined by the longest possible path from the root `(n1, n2)` to a base case `i < 0` or `j < 0`.
+
+*   **Match Case:** `f(i-1, j-1)` — This moves you "diagonally" closer to the base case, reducing the sum of indices by 2.
+*   **Mismatch Case:** `f(i-1, j)` or `f(i, j-1)` — These move you closer to the base case by reducing the sum of indices by 1.
+
+The **worst-case stack depth** occurs when we have only mismatches and we alternate decrements. 
+- Example: $(2, 2) \to (2, 1) \to (1, 1) \to (1, 0) \to (0, 0) \to (0, -1)$.
+- Here, the stack depth reaches $n1 + n2$ calls.
+
+> [!NOTE]
+> Even though some sources say the height is $\max(n1, n2)$, that only happens if you only decrement one specific pointer. If you alternate, you can reach a depth of $n1 + n2$. Asymptotically, however, $O(n1 + n2)$ and $O(\max(n1, n2))$ are **identical**.
+
+### 2. Number of Nodes (Time Complexity)
+Without **Memoization**, each branch splits into two, creating an exponential number of calls ($O(2^{n1+n2})$). 
+
+With **Memoization** (or the Iterative DP approach you implemented), we only calculate each pair $(i, j)$ once.
+- **Time complexity:** $O(n1 \times n2)$ because there are that many unique states.
+- **Space complexity:** $O(n1 \times n2)$ for the DP table (but can be optimized to $O(\min(n1, n2))$ using space-optimized iterative DP).
