@@ -33,12 +33,15 @@
 # 0 <= cost[i] <= 999
 class Solution:
     def minCostClimbingStairs(self, cost: List[int]) -> int:
-        l = len(cost)
-        dp = [0] * (l + 1)
-        if l == 0:
-            dp[0] == cost[0]
-        elif l == 1:
-            dp[1] == cost[1]
-        for i in range(2, l + 1):
-            dp[i] = min(dp[i - 1], dp[i - 2]) + cost[i - 1]
-        return dp[l]
+        n = len(cost)
+        dp = [0] * (n + 1)
+        # dp[i] is the minimum cost to reach step i.
+        # We can start from step 0 or step 1, so dp[0] and dp[1] are 0.
+        # for i in range(2, n + 1):
+        #     dp[i] = min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2])
+        # return dp[n]
+        prev2, prev1 = 0, 0
+        for i in range(2, len(cost) + 1):
+            current = min(prev1 + cost[i-1], prev2 + cost[i-2])
+            prev2, prev1 = prev1, current
+        return prev1
