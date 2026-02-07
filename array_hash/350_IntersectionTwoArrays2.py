@@ -26,11 +26,21 @@
 # What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
 class Solution:
     def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
-        seen = defaultdict(int)
-        for e in nums1:
-            seen[e] += 1
+        # seen = defaultdict(int)
+        # res = []
+        # for e in nums1:
+        #     seen[e] += 1
+        # for e in nums2:
+        #     if e in seen and seen[e] > 0:
+        #         seen[e] -= 1
+        #         res.append(e)
+        # return res
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+        res = []
+        cnt = Counter(nums1)
         for e in nums2:
-            if e in seen:
-                seen[e] -= 1
-        res = [k for k, v in seen.items() if v == 0]
+            if cnt[e] > 0:
+                cnt[e] -= 1
+                res.append(e)
         return res
