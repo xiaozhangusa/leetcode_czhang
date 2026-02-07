@@ -21,10 +21,10 @@ class Solution:
     def intersection(self, nums1: List[int], nums2: List[int]) -> List[int]:
         seen = {}
         res = []
-        for e in nums1 + nums2: 
-            if e not in seen:
-                seen[e] = 1
-            elif seen[e] == 1:
+        for e in nums1:
+            seen[e] = 1
+        for e in nums2:
+            if e in seen and seen[e] == 1:
                 seen[e] = 0
                 res.append(e)
         return res
