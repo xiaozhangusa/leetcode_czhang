@@ -28,9 +28,10 @@ class Solution:
                 res.append(arr1[p1])
                 p1 += 1
                 p2 += 1
+                p3 += 1
             elif arr1[p1] < arr2[p2]:
                 p1 += 1
-            elif arr2[p2] < arr3[p2]:
+            elif arr2[p2] < arr3[p3]:
                 p2 += 1
             else:
                 p3 += 1
