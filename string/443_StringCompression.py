@@ -36,18 +36,47 @@
 # 1 <= chars.length <= 2000
 # chars[i] is a lowercase English letter, uppercase English letter, digit, or symbol.
 
+from typing import List
+
 class Solution:
     def compress(self, chars: List[str]) -> int:
-        i, j = 0, 0 
-        chars_len = len(chars)
-        while i < len(chars):
-            group_len = 1
-            while (j + group_len < chars_len) and chars[j + group_len] == chars[i]:
-                group_len += 1
-            chars[j] = chars[i]
-            # check the group_len
-            if group_len > 1:
-                str_group_len = str(group_len)
-                chars[j:j + len(str_group_len)] = str_group_len
-            i += j + group_len
-        return j
+        """
+        Compresses the array of characters in-place using two pointers.
+        
+        Vivid Example:
+        Input:  chars = ["a", "a", "b", "b", "c", "c", "c"]
+        1. Process "aa": write 'a', then count '2' -> ["a", "2", ...]
+        2. Process "bb": write 'b', then count '2' -> ["a", "2", "b", "2", ...]
+        3. Process "ccc": write 'c', then count '3' -> ["a", "2", "b", "2", "c", "3"]
+        Output: 6
+        """
+        write = 0  # Where to write the compressed character/count
+        read = 0   # Scanning through the original array
+        n = len(chars)
+
+        while read < n:
+            char = chars[read]
+            count = 0
+            
+            # Count consecutive repeating characters
+            # e.g., if chars[read:read+3] is ["a", "a", "a"], count will be 3
+            while read < n and chars[read] == char:
+                read += 1
+                count += 1
+            
+            # 1. Write the character itself
+            chars[write] = char
+            write += 1
+            
+            # 2. Write the count if it's > 1
+            # If count is 12, we must write '1' then '2'
+            if count > 1:
+                for digit in str(count):
+                    chars[write] = digit
+                    write += 1
+            # if count > 1:
+            #     str_cnt = str(count)
+            #     chars[write:write + len(str_cnt)] = str_cnt
+            #     write += len(str_cnt)
+                    
+        return write
