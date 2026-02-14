@@ -50,28 +50,28 @@ class StringIterator:
             self.remaining_count = 0
 
     def next(self) -> str:
+        # hasNext() acts as a guard. If remaining_count is 0, we never reach the decrement logic.
         if not self.hasNext():
             return ' '
         
-        # Get the character to return
         res = self.current_char
         self.remaining_count -= 1
         
-        # If we exhausted the current character group, move to the next token
+        # If the current group is exhausted, proactively move to the next one
         if self.remaining_count == 0:
             self.cursor += 1
             if self.cursor < len(self.tokens):
                 self.current_char = self.tokens[self.cursor][0]
                 self.remaining_count = int(self.tokens[self.cursor][1])
             else:
-                self.current_char = ''
+                self.current_char = '' # Signal that we are truly empty
                 
         return res
 
     def hasNext(self) -> bool:
-        # We have a next character if we haven't exhausted the current group
-        # or if there are more groups waiting in the tokens list.
-        return self.remaining_count > 0 or self.cursor < len(self.tokens) - 1
+        # Since next() proactively updates remaining_count to the next group,
+        # this single check is all we need.
+        return self.remaining_count > 0
 
 
 # Your StringIterator object will be instantiated and called as such:
