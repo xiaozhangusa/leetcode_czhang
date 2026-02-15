@@ -38,15 +38,15 @@ class Solution:
             cnt = 0
             for t in time:
                 cnt += guess // t
-            return cnt >= guess
+            return cnt >= totalTrips
 
-        left, right = 5, 15
+        left, right = 1, min(time) * totalTrips
         ans = right
         while left <= right:
             mid = left + (right - left) // 2
             if canComplete(mid):
                 # if 'mid' works, try to find an even better answer
-                ans = mid 
+                ans = mid
                 right = mid - 1
             else:
                 left = mid + 1
