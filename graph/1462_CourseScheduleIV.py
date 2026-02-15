@@ -56,6 +56,7 @@ class Solution:
         for seed in seeds:
             for nx in adj[seed]:
                 pres[nx].add(seed)
+                pres[nx].update(pres[seed]) # Inherit transitive prerequisites
                 indegrees[nx] -= 1
                 if indegrees[nx] == 0:
                     seeds.append(nx)
@@ -67,4 +68,4 @@ class Solution:
             else:
                 res.append(False)
 
-        return reså
+        return res
