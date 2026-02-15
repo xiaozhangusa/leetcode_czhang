@@ -34,22 +34,22 @@ class Solution:
         for c, pre in prerequisites:
             pre_map[c].append(pre)
         
-        visited = set()
+        on_path = set()
         
         # detect cycle
         def dfs(c):
             # encounter c twice
-            if c in visited:
+            if c in on_path:
                 return False
             
             if len(pre_map[c]) == 0:
                 return True
             
-            visited.add(c)
+            on_path.add(c)
             for pre in pre_map[c]:
                 if not dfs(pre):
                     return False
-            visited.remove(c)
+            on_path.remove(c)
             pre_map[c] = []
             return True
         

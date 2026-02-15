@@ -5,23 +5,23 @@ The goal is to determine if all courses can be finished given a set of prerequis
 
 ## Cycle Detection Logic (DFS + Backtracking)
 
-The solution uses Depth First Search (DFS) with a `visited` set to track the current recursion path. This is a common pattern for detecting cycles in directed graphs.
+The solution uses Depth First Search (DFS) with an `on_path` set to track the current recursion path. This is a common pattern for detecting cycles in directed graphs.
 
 ### The "Red Pin" Analogy 🚩
 Imagine exploring a series of one-way tunnels in a cave with a bag of **Red Pins**:
 
-1. **`visited.add(c)`**: When you enter course `c`, you stick a **Red Pin** on the wall. This marks that you are **currently investigating** this path.
-2. **`visited.remove(c)`**: Once you have explored all branches leading from `c` and confirmed they don't loop back, you **take your Red Pin back** as you leave. This marks the node as "finished" for the current exploration.
+1. **`on_path.add(c)`**: When you enter course `c`, you stick a **Red Pin** on the wall. This marks that you are **currently investigating** this path.
+2. **`on_path.remove(c)`**: Once you have explored all branches leading from `c` and confirmed they don't loop back, you **take your Red Pin back** as you leave. This marks the node as "finished" for the current exploration.
 
-### 💡 Why `visited.remove(c)` is Necessary?
+### 💡 Why `on_path.remove(c)` is Necessary?
 
-Without removing the node from the `visited` set, the algorithm would incorrectly detect cycles in "V-shaped" or Diamond-shaped graphs where two different paths meet at the same safe node.
+Without removing the node from the `on_path` set, the algorithm would incorrectly detect cycles in "V-shaped" or Diamond-shaped graphs where two different paths meet at the same safe node.
 
 #### Example: The V-Shape
 - Course **A** needs **C** (`A -> C`)
 - Course **B** needs **C** (`B -> C`)
 
-| Step | Action | `visited` set | Explanation |
+| Step | Action | `on_path` set | Explanation |
 | :--- | :--- | :--- | :--- |
 | 1 | Visit **A** | `{A}` | |
 | 2 | Visit **C** | `{A, C}` | |
@@ -46,20 +46,20 @@ class Solution:
         for crs, pre in prerequisites:
             pre_map[crs].append(pre)
         
-        visited = set()
+        on_path = set()
         
         def dfs(c):
-            if c in visited: # Cycle detected!
+            if c in on_path: # Cycle detected!
                 return False
             if pre_map[c] == []: # Already confirmed safe
                 return True
             
-            visited.add(c)
+            on_path.add(c)
             for pre in pre_map[c]:
                 if not dfs(pre): # Check if sub-path is safe
                     return False
             
-            visited.remove(c)
+            on_path.remove(c)
             pre_map[c] = [] # OPTIMIZATION: Mark as safe for other paths
             return True
         
@@ -238,8 +238,8 @@ The answer depends on your goal:
 | Feature | Standard DFS Traversal | DFS with Backtracking (Cycle Detection) |
 | :--- | :--- | :--- |
 | **Logic** | "Have I ever been here before?" | "Am I currently pathfinding through this node?" |
-| **`visited.add()`** | ✅ Necessary (prevents infinite loops). | ✅ Necessary (starts the path tracking). |
-| **`visited.remove()`** | ❌ **Not used.** | ✅ **Essential.** |
+| **`on_path.add()`** | ✅ Necessary (prevents infinite loops). | ✅ Necessary (starts the path tracking). |
+| **`on_path.remove()`** | ❌ **Not used.** | ✅ **Essential.** |
 | **Set Meaning** | Global history of all visited nodes. | Current "Recursion Stack" (the path we are on). |
 | **Analogy** | Checking off rooms you've already painted. | Sticking a "Red Pin" in rooms on your current walk. |
 
@@ -253,9 +253,9 @@ You are painting every room you enter. If you walk into a room and the walls are
 
 #### 2. Backtracking: "The Tied String" (Path Set)
 You walk into the maze with a single long string tied to your waist. 
-- **`visited.add(c)`**: You clip the string to a hook as you enter a room.
-- **`c in visited`**: If you enter a room and see your **own string** already hooked there, you’ve walked in a circle!
-- **`visited.remove(c)`**: When you backtrack/leave a room, you **unhook the string**.
+- **`on_path.add(c)`**: You clip the string to a hook as you enter a room.
+- **`c in on_path`**: If you enter a room and see your **own string** already hooked there, you’ve walked in a circle!
+- **`on_path.remove(c)`**: When you backtrack/leave a room, you **unhook the string**.
 
 ```mermaid
 graph TD
