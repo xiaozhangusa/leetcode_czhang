@@ -50,7 +50,7 @@ class Solution:
                 if not dfs(pre):
                     return False
             visited.remove(c)
-            # pre_map[c] = []
+            pre_map[c] = []
             return True
         
         for c in range(numCourses):
