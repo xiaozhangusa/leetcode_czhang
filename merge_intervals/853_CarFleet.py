@@ -74,13 +74,16 @@ class Solution:
 
         cars = sorted(zip(position, speed), reverse=True)
 
-        cnt = len(cars)
-        leader_time = inf
+        fleets = 0
+        cur_lead_time = 0
+        
         for pos, spd in cars:
-             cur_time = (target - pos) / spd
-             # need to join previous fleet
-             if cur_time < leader_time:
-                cnt -= 1
-                leader_time = cur_time
-            # new fleet
-        return cnt
+            arrival_time = (target - pos) / spd
+            
+            # If this car takes MORE time than the leader in front,
+            # it can NEVER catch up. It becomes a NEW fleet leader.
+            if arrival_time > cur_lead_time:
+                fleets += 1
+                cur_lead_time = arrival_time
+                
+        return fleets

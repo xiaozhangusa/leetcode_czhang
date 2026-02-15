@@ -40,10 +40,65 @@ def merge_intervals(intervals):
     return merged
 ```
 
-### 2. The "Rolling Reset" (Capped Sum)
-Used when a duration is "reset" by the next event.
+### 2. The "Rolling Gap" (Capped Sum)
+Used when a duration is "reset" by the next event. Instead of merging intervals, we calculate the contribution of each event on-the-fly.
 - **Representative Problem**: [495. Teemo Attacking](https://leetcode.com/problems/teemo-attacking/)
-- **Strategy**: Simply add `min(duration, next_start - current_start)`.
+- **Mental Model**: The **"Refillable Water Bottle"**. You start drinking (poison), but if someone refills your bottle (new attack) before it's empty, you don't drink "more" total water than the capacity—you just reset the timer.
+
+#### 📊 Visualization (O(1) Space Logic)
+Imagine attacks at `[1, 2]` with `duration = 2`:
+```text
+Time:    1   2   3   4
+Attack:  A1  A2
+A1 Poison: [---] (1 to 3)
+A2 Poison:     [---] (2 to 4)
+-------------------------
+Total:     [=======] (1 to 4) = 3 seconds
+```
+**The Math**:
+- Gap between A1 and A2 is `2 - 1 = 1`. 
+- Since `Gap (1) < Duration (2)`, A1 only contributes **1 second** of unique poison.
+- The **last attack** always contributes the **full duration**.
+- **Total** = $\sum \min(\text{duration}, \text{next\_start} - \text{curr\_start}) + \text{duration}$.
+
+> [!NOTE]
+> ### ⏰ The "Countdown Alarm" Mental Model
+> The core of understanding this is: **Poison duration is interrupted by the "next attack".**
+> 
+> Imagine the poison is a **10-minute countdown alarm**. Every time Teemo attacks, he forcibly **resets** the alarm to 10:00 and starts the countdown again.
+> 
+> 1.  **Attack 1 (t=1):** Alarm starts counting from 10:00.
+> 2.  **Attack 2 (t=5):** At this point, the alarm has reached 6:00. Teemo hits you, **BANG**, the alarm is reset back to 10:00.
+>     - **Result**: Attack 1 only ran for **4 minutes** before being interrupted.
+> 3.  **... Last Attack (t=100):** Teemo hits you and disappears.
+>     - **Result**: The alarm resets to 10:00, but because **no one else comes to interrupt it**, it runs its full **10-minute course** until it hits zero.
+> 
+> #### 📊 Visual Comparison
+> Assume `duration = 10`, attacks at `[1, 5, 20]`:
+> - **t=1 attack**: 4s gap until next attack $\rightarrow$ contributes **4s**.
+> - **t=5 attack**: 15s gap until next attack $\rightarrow$ gap is long, but poison only lasts 10s $\rightarrow$ contributes **10s**.
+> - **t=20 attack (last)**: The "End of Time" follows $\rightarrow$ inevitably runs for **10s**.
+>   - **Total**: $4 + 10 + 10 = 24$ seconds.
+> 
+> **The Essence**: This $O(1)$ space algorithm works because: "Everyone looks at the person behind them to see how much time they have left; but the last person only looks at themselves."
+
+```python
+def find_poisoned_duration(timeSeries, duration):
+    if not timeSeries: return 0
+    total = 0
+    for i in range(len(timeSeries) - 1):
+        # Only add the "unique" time before the next reset
+        total += min(duration, timeSeries[i+1] - timeSeries[i])
+    return total + duration # Always add the full last duration
+```
+- **Optimization**: $O(1)$ Space! No need to store intervals.
+
+#### 👯 Direct Cousins (Related Problems)
+The "Rolling Gap" logic isn't just for intervals; it's a powerful way to handle **cumulative contribution** based on neighbors:
+
+1.  **[122. Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)**: Instead of findining complicated intervals to buy/sell, just sum every positive "gap" between today and tomorrow: `res += max(0, prices[i+1] - prices[i])`.
+2.  **[135. Candy](https://leetcode.com/problems/candy/)**: You compare a child to their neighbor and adjust their "candy level" based on the gap in ratings.
+3.  **[853. Car Fleet](https://leetcode.com/problems/car-fleet/)**: A **Greedy** approach using "Rolling Gap" in **Arrival Times**. If Car B behind takes less time than Car A in front, the arrival time gap "closes" before the target, forcing a merge.
 
 ---
 
