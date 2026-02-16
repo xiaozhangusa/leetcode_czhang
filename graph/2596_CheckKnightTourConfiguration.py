@@ -30,21 +30,34 @@
 # 0 <= grid[row][col] < n * n
 # All integers in grid are unique.
 
+from collections import deque
+from typing import List
+
 class Solution:
     def checkValidGrid(self, grid: List[List[int]]) -> bool:
+        # 1. Starting condition: Must start at top-left with value 0
+        n = len(grid)
         # Directions for a knight move
         dirs = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
 
         q = deque([(0, 0)])
-        visited = set((0, 0))
+        visited = {(0, 0)}
         moves = 0
         while q:
+            print("---------- moves: ", moves)
             cx, cy = q.popleft()
+            found = False
             for dx, dy in dirs:
                 nx, ny = cx + dx, cy + dy
-                if (nx, ny) not in visited:
-                    if grid[nx][ny] == moves:
+                if 0 <= nx <n and 0 <= ny < n:
+                    if (nx, ny) not in visited and grid[nx][ny] == moves + 1:
+                        print("nx, ny: ", nx, ny)
                         visited.add((nx, ny))
                         q.append((nx, ny))
+                        found = True
+                        break
+            if not found:
+                return False
             moves += 1
-        return moves == len(grid)^2
+        print("moves: ", moves)
+        return True
