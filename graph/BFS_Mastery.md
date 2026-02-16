@@ -82,14 +82,46 @@ def bfs_recursive_simulation(node, level, results):
 
 ---
 
+## 🏗️ Template 3: Deterministic Path Verification (The "Trail Follower")
+
+In some problems (like the **Knight Tour**), you aren't searching for *any* path; you are verifying a **specific, pre-defined trail** of numbers or steps using neighbor rules.
+
+### Mental Model: The breadcrumb trail
+Instead of ripples, imagine you are a detective following breadcrumbs labeled `1, 2, 3...`. At each step, you check the valid "moves" allowed by the board to see if the next breadcrumb is exactly where it's supposed to be.
+
+```python
+def verify_sequential_path(grid, start_pos):
+    n = len(grid)
+    cx, cy = start_pos
+    
+    # Follow the numbers from 1 to n*n-1
+    for move in range(1, n * n):
+        found = False
+        for dx, dy in get_neighbor_rules():
+            nx, ny = cx + dx, cy + dy
+            
+            # Check the "Invisible Fence" and the next number
+            if 0 <= nx < n and 0 <= ny < n and grid[nx][ny] == move:
+                cx, cy = nx, ny # Move the detective to the next breadcrumb
+                found = True
+                break
+        
+        if not found: # Trail is broken!
+            return False
+            
+    return True
+```
+
+---
+
 ## ⚡ Comparison & Choose Wisely
 
-| Feature | Iterative BFS | Recursive Simulation |
-| :--- | :--- | :--- |
-| **Data Structure** | Queue (FIFO) | Call Stack (LIFO) |
-| **Shortest Path** | Perfect! Stops early. | Not efficient for early stop. |
-| **Complexity** | $O(V+E)$ | $O(N)$ for trees. |
-| **Best For** | Minimum steps, Shortest path. | Tree level-order stats (avg, max). |
+| Feature | Iterative BFS | Recursive Simulation | Path Verification |
+| :--- | :--- | :--- | :--- |
+| **Data Structure** | Queue (FIFO) | Call Stack (LIFO) | Loop variables (`cx, cy`) |
+| **Shortest Path** | Perfect! Stops early. | Not efficient for early stop. | N/A (Path is fixed) |
+| **Complexity** | $O(V+E)$ | $O(N)$ for trees. | $O(\text{Sequence Length})$ |
+| **Best For** | Minimum steps, Shortest path. | Tree level-order stats (avg, max). | Validating a specific sequence. |
 
 ---
 
@@ -114,6 +146,10 @@ def bfs_recursive_simulation(node, level, results):
 ### 5. Level-Aware Recursion (DFS Simulating BFS)
 *   **[LC 199. Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/)**: Often cleaner with level-aware recursion.
 *   **[LC 637. Average of Levels in Binary Tree](https://leetcode.com/problems/average-of-levels-in-binary-tree/)**: Perfect for accumulating stats per level.
+
+### 6. Deterministic Path Verification (The Detective)
+*   **[LC 2596. Check Knight Tour Configuration](https://leetcode.com/problems/check-knight-tour-configuration/)**: Validating a sequential breadcrumb trail on a grid.
+*   **[LC 331. Verify Preorder Serialization](https://leetcode.com/problems/verify-preorder-serialization-of-a-binary-tree/)**: Verifying if a sequence follows tree structure rules.
 
 ---
 

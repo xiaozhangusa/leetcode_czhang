@@ -40,35 +40,16 @@ class Solution:
             return False
             
         n = len(grid)
-        dirs = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
-
-        q = deque([(0, 0)])
-        visited = {(0, 0)}
-        moves = 0
+        dirs = [(2,1),(1,2),(-1,2),(-2,1),(-2,-1),(-1,-2),(1,-2),(2,-1)]
+        cx, cy = 0, 0
         
-        # Total squares to visit is n*n. Last move index is n*n - 1.
-        while q:
-            cx, cy = q.popleft()
-            
-            # THE FIX: If we just finished the last move (n*n-1), we win!
-            if moves == n * n - 1:
-                return True
-                
+        for move in range(1, n * n):
             found = False
             for dx, dy in dirs:
                 nx, ny = cx + dx, cy + dy
-                # The "Invisible Fence"
-                if 0 <= nx < n and 0 <= ny < n:
-                    if (nx, ny) not in visited and grid[nx][ny] == moves + 1:
-                        visited.add((nx, ny))
-                        q.append((nx, ny))
-                        found = True
-                        break
-            
-            # If we couldn't find the NEXT move from our current spot
-            if not found:
-                return False
-                
-            moves += 1
-            
-        return False # Should be handled by moves == n*n-1 check
+                if 0 <= nx < n and 0 <= ny < n and grid[nx][ny] == move:
+                    cx, cy = nx, ny
+                    found = True
+                    break
+            if not found: return False
+        return True
