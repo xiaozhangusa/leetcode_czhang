@@ -35,29 +35,40 @@ from typing import List
 
 class Solution:
     def checkValidGrid(self, grid: List[List[int]]) -> bool:
-        # 1. Starting condition: Must start at top-left with value 0
+        # 1. Starting condition: Knight MUST start at (0,0) at move 0
+        if grid[0][0] != 0:
+            return False
+            
         n = len(grid)
-        # Directions for a knight move
         dirs = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
 
         q = deque([(0, 0)])
         visited = {(0, 0)}
         moves = 0
+        
+        # Total squares to visit is n*n. Last move index is n*n - 1.
         while q:
-            print("---------- moves: ", moves)
             cx, cy = q.popleft()
+            
+            # THE FIX: If we just finished the last move (n*n-1), we win!
+            if moves == n * n - 1:
+                return True
+                
             found = False
             for dx, dy in dirs:
                 nx, ny = cx + dx, cy + dy
-                if 0 <= nx <n and 0 <= ny < n:
+                # The "Invisible Fence"
+                if 0 <= nx < n and 0 <= ny < n:
                     if (nx, ny) not in visited and grid[nx][ny] == moves + 1:
-                        print("nx, ny: ", nx, ny)
                         visited.add((nx, ny))
                         q.append((nx, ny))
                         found = True
                         break
+            
+            # If we couldn't find the NEXT move from our current spot
             if not found:
                 return False
+                
             moves += 1
-        print("moves: ", moves)
-        return True
+            
+        return False # Should be handled by moves == n*n-1 check
