@@ -24,21 +24,39 @@
 # -300 <= x, y <= 300
 # 0 <= |x| + |y| <= 300
 
+from collections import deque
+
 class Solution:
     def minKnightMoves(self, x: int, y: int) -> int:
-        dirs = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2,-1)]
+        # Use absolute values due to symmetry
+        x, y = abs(x), abs(y)
+        
+        # Directions for a knight move
+        dirs = [(2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)]
+        
         q = deque([(0, 0)])
-        print("q: ", q)
+        visited = set([(0, 0)])
         step = 0
-        visited = set()
+        
         while q:
-            cur = q.popleft()
-            print("cur: ", cur)
-            visited.add(cur)
-            if cur[0] == x and cur[1] == y:
-                return step
+            # Level-by-level BFS
+            for _ in range(len(q)):
+                curr_x, curr_y = q.popleft()
+                
+                if curr_x == x and curr_y == y:
+                    return step
+                
+                for dx, dy in dirs:
+                    nx, ny = curr_x + dx, curr_y + dy
+                    
+                    # Optimization: Since we target (abs(x), abs(y)), 
+                    # we can stay in the positive quadrant mostly.
+                    # nx >= -1 and ny >= -1 allows for the knight to move 
+                    # slightly negative to reach small positive targets.
+                    if (nx, ny) not in visited and nx >= -1 and ny >= -1:
+                        visited.add((nx, ny))
+                        q.append((nx, ny))
+            
             step += 1
-            for dx, dy in dirs:
-                nx = (cur[0] + dx, cur[1] + dy)
-                if nx not in visited:
-                    q.append(nx)
+        
+        return -1 # Should not reach here per constraints
