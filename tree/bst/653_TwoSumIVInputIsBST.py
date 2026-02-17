@@ -37,3 +37,34 @@ class Solution:
 # 1. Flatten the BST into a sorted list using in-order traversal.
 # 2. Use two pointers (left and right) to find the target sum.
 # Time: O(N), Space: O(N)
+
+class Solution2:
+    def findTarget(self, root: TreeNode, k: int) -> bool:
+        """
+        Think of this as lining up all villagers by age in a straight line (Sorted Array).
+        Then, we use two scouts (Pointers) at both ends to find the match.
+        """
+        nums = []
+        
+        # In-order traversal of BST gives us elements in ascending order
+        def inorder(node):
+            if not node:
+                return
+            inorder(node.left)
+            nums.append(node.val)
+            inorder(node.right)
+            
+        inorder(root)
+        
+        # Two-pointer movement
+        left, right = 0, len(nums) - 1
+        while left < right:
+            current_sum = nums[left] + nums[right]
+            if current_sum == k:
+                return True
+            elif current_sum < k:
+                left += 1  # Need a bigger sum, move left pointer forward
+            else:
+                right -= 1 # Need a smaller sum, move right pointer backward
+                
+        return False
