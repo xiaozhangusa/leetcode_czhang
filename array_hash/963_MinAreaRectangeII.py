@@ -1,3 +1,7 @@
+from typing import List
+from collections import defaultdict
+from math import sqrt, inf
+
 # You are given an array of points in the X-Y plane points where points[i] = [xi, yi].
 
 # Return the minimum area of any rectangle formed from these points, with sides not necessarily parallel to the X and Y axes. If there is not any such rectangle, return 0.
@@ -41,11 +45,13 @@ class Solution:
 
         diagonals = defaultdict(list)
 
-        # build diagnoals(mid, l) 
+        # build diagonals (midpoint, length squared)
         for i in range(len(points)):
-            for j in range(i, len(points)):
+            for j in range(i + 1, len(points)):
                 p1, p2 = points[i], points[j]
-                mid = ((p1[0] + p2[0] / 2), (p1[1] + p2[1] / 2))
+                # Correct midpoint calculation with parentheses
+                mid = ((p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2)
+                # Diagonal distance squared
                 d = (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
                 diagonals[(mid, d)].append((p1, p2))
 
@@ -56,8 +62,16 @@ class Solution:
                 continue
             for i in range(len(pairs)):
                 for j in range(i + 1, len(pairs)):
-                    p1, p2 = pairs[i], pairs[j]
-                    area = sqrt((p1[0] - p2[0]) * (p1[1] - p2[1]))
+                    # pairs[i] and pairs[j] are two diagonals (p1, p2) and (p3, p4)
+                    # they share the same midpoint and have the same length
+                    # so they form a rectangle.
+                    (p1, p2), (p3, p4) = pairs[i], pairs[j]
+                    
+                    # Area = dist(p1, p3) * dist(p3, p2)
+                    side1_sq = (p1[0] - p3[0]) ** 2 + (p1[1] - p3[1]) ** 2
+                    side2_sq = (p1[0] - p4[0]) ** 2 + (p1[1] - p4[1]) ** 2
+                    
+                    area = sqrt(side1_sq * side2_sq)
                     ans = min(ans, area)
 
-        return ans if ans < float(inf) else 0 
+        return ans if ans < float(inf) else 0
