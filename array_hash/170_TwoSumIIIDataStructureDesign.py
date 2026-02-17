@@ -30,21 +30,27 @@
 # -231 <= value <= 231 - 1
 # At most 104 calls will be made to add and find.
 
+from collections import defaultdict
+
 class TwoSum:
 
     def __init__(self):
-        self.sum_dict = defaultdict(int)
-        self.nums = []
+        self.count = defaultdict(int)
 
     def add(self, number: int) -> None:
-        self.nums.append(number)
+        self.count[number] += 1
 
     def find(self, value: int) -> bool:
-        for i in self.nums:
-            if i in self.sum_dict:
-                return True
+        for n in self.count:
+            comp = value - n
+            # case 1: comp != n
+            if comp != n:
+                if comp in self.count:
+                    return True
+            # case 2: comp == n by accident
             else:
-                self.sum_dict[value - i] = i
+                if self.count[n] > 1: # need at least 2 instances
+                    return True
         return False
         
 
