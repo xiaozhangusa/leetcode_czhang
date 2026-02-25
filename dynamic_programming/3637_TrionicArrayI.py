@@ -54,4 +54,7 @@ class Solution:
         q = i
         while i < n - 1 and nums[i] < nums[i + 1]:
             i += 1
-        return True if i == n - 1 else False
+        if i == q:
+            return False
+        # Ensure the third segment (q to n-1) is non-empty
+        return i == n - 1 and i > q
